@@ -121,7 +121,7 @@
 
 ```
 smart-inventory-calendar/
-├── index.html # 主页面（包含样式、脚本和界面）
+├── Smart-Calendar-Generator.html # 主页面（包含样式、脚本和界面）
 └── README.md # 项目说明文档
 ```
 
