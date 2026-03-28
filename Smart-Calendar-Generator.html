@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>灵活盘点日历生成器 - 自定义规则+智能工作日</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.12);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2c44 100%);
+            color: white;
+            padding: 1.8rem 2rem;
+        }
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            font-size: 1.9rem;
+            letter-spacing: -0.3px;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        .content {
+            padding: 2rem;
+        }
+        .config-section {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .config-item label {
+            font-weight: 600;
+            color: #0f2c44;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .config-item input, .config-item select, .config-item textarea {
+            padding: 0.65rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: white;
+            font-family: inherit;
+        }
+        .config-item input:focus, .config-item select:focus, .config-item textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .config-item textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .rule-hint {
+            background: #eef2ff;
+            border-radius: 14px;
+            padding: 0.8rem 1.2rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #1e40af;
+        }
+        .date-list {
+            background: #f8fafc;
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0px;
+        }
+        .date-item {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .month {
+            font-weight: 700;
+            color: #0f172a;
+            width: 48px;
+        }
+        .day-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .day-date {
+            font-family: monospace;
+            background: #e6f0ff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .weekday-badge {
+            font-size: 0.7rem;
+            color: #475569;
+        }
+        .rule-tag {
+            font-size: 0.65rem;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 20px;
+            color: #2c3e66;
+        }
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #f1f5f9;
+            color: #1e293b;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 10px rgba(37,99,235,0.25);
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+        }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        .footer-note {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.2rem;
+        }
+        .status-msg {
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: #16a34a;
+        }
+        @media (max-width: 640px) {
+            .content {
+                padding: 1.5rem;
+            }
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1>📅 智能盘点日历 · 灵活配置</h1>
+            <p>自定义基准日、时间、任务名称 | 自动取基准日之前最近工作日（含当天）</p>
+        </div>
+        <div class="content">
+            <!-- 配置区域 -->
+            <div class="config-section">
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>📆 年份</label>
+                        <select id="yearSelect"></select>
+                    </div>
+                    <div class="config-item">
+                        <label>📌 基准日期（每月几日 ）</label>
+                        <input type="number" id="targetDay" min="1" max="31" value="25" step="1">
+                        <div style="font-size:0.7rem; color:#5b6e8c;">规则：取当月该日期之前（含当天）最近的工作日</div>
+                    </div>
+                    <div class="config-item">
+                        <label>⏰ 开始时间</label>
+                        <input type="time" id="startTime" value="09:00" step="60">
+                    </div>
+                    <div class="config-item">
+                        <label>⏰ 结束时间</label>
+                        <input type="time" id="endTime" value="09:15" step="60">
+                    </div>
+                    <div class="config-item">
+                        <label>📝 任务名称</label>
+                        <input type="text" id="eventSummary" value="报废螺栓盘点" placeholder="例如：设备巡检">
+                    </div>
+                    <div class="config-item">
+                        <label>📄 任务描述</label>
+                        <textarea id="eventDescription" rows="2" placeholder="详细描述（可选）">每月盘点任务，基于基准日之前最近的工作日执行。</textarea>
+                    </div>
+                    <div class="config-item">
+                        <label>🏷️ 分类标签（可选）</label>
+                        <input type="text" id="categories" value="盘点,维护" placeholder="多个标签用英文逗号分隔，如：工作,盘点">
+                        <div style="font-size:0.7rem; color:#5b6e8c;">留空则不添加CATEGORIES字段</div>
+                    </div>
+                </div>
+                <div class="rule-hint">
+                    💡 智能规则：每月根据所选「基准日期」（如25号），自动寻找该日期之前最近的一个工作日（如果基准日本身是工作日则取当天）。<br>
+                    例如基准日=10号：若10号周六则取9号周五；若10号周日则取8号周五；确保任务在当月有效范围内。
+                </div>
+            </div>
+
+            <!-- 预览列表 -->
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
+                <h3 style="margin:0; font-size:1.2rem;">📋 各月实际执行日期预览</h3>
+                <button class="btn-secondary" id="refreshPreviewBtn" style="padding:6px 16px; font-size:0.8rem;">🔄 刷新预览</button>
+            </div>
+            <div class="date-list" id="dateListContainer">
+                <div style="text-align: center; padding: 30px; color: #6c757d;">请调整参数后点击刷新预览</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="downloadBtn">📥 下载 .ics 日历文件</button>
+            </div>
+            <div class="footer-note">
+                ✅ 生成的ICS文件完全符合RFC 5545标准，兼容Outlook、Google日历、Apple日历。<br>
+                ⚡ 规则：距离基准日之前最近的工作日（若基准日当天为工作日则取当天），时间可自定义，任务内容自由编辑。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM 元素
+        const yearSelect = document.getElementById('yearSelect');
+        const targetDayInput = document.getElementById('targetDay');
+        const startTimeInput = document.getElementById('startTime');
+        const endTimeInput = document.getElementById('endTime');
+        const eventSummaryInput = document.getElementById('eventSummary');
+        const eventDescInput = document.getElementById('eventDescription');
+        const categoriesInput = document.getElementById('categories');
+        const refreshBtn = document.getElementById('refreshPreviewBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const dateListContainer = document.getElementById('dateListContainer');
+        
+        // 动态填充年份选项 (当前年份 ± 5年)
+        const currentYear = new Date().getFullYear();
+        function populateYearOptions() {
+            const startYear = currentYear - 3;
+            const endYear = currentYear + 5;
+            for (let y = startYear; y <= endYear; y++) {
+                const option = document.createElement('option');
+                option.value = y;
+                option.textContent = y;
+                if (y === 2026) option.selected = true; // 默认2026 符合原先预期
+                yearSelect.appendChild(option);
+            }
+        }
+        
+        // 辅助函数：判断是否为工作日（周一至周五）
+        function isWeekday(date) {
+            const dow = date.getDay(); // 0周日,1周一..6周六
+            return dow >= 1 && dow <= 5;
+        }
+        
+        // 获取某月天数
+        function getDaysInMonth(year, month) {
+            // month 0-index
+            return new Date(year, month + 1, 0).getDate();
+        }
+        
+        /**
+         * 核心：根据年份、月份(0-index)和用户设定的基准日targetDay (1-31)
+         * 返回: 距离基准日之前（含基准日当天）最近的工作日 Date对象。
+         * 如果基准日超出当月最大天数，则取当月最后一天作为基准。
+         */
+        function findPreviousWorkday(year, month, targetDay) {
+            const daysInMonth = getDaysInMonth(year, month);
+            let baseDay = targetDay;
+            if (baseDay > daysInMonth) {
+                baseDay = daysInMonth;
+            }
+            // 从 baseDay 开始向前遍历直到找到工作日
+            for (let d = baseDay; d >= 1; d--) {
+                const candidate = new Date(year, month, d);
+                if (isWeekday(candidate)) {
+                    return candidate;
+                }
+            }
+            // 理论上每月至少有工作日，但若出现极端情况返回最后一天（作为后备）
+            return new Date(year, month, baseDay);
+        }
+        
+        // 获取全年12个月的实际执行日期数组 (monthIdx 0~11)
+        function getAllInventoryDates(year, targetDay) {
+            const dates = [];
+            for (let month = 0; month < 12; month++) {
+                const inventoryDate = findPreviousWorkday(year, month, targetDay);
+                dates.push(inventoryDate);
+            }
+            return dates;
+        }
+        
+        // 格式化日期时间用于ICS (本地时间，无Z，用于DTSTART;TZID)
+        function formatLocalDateTime(date, hour, minute) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const hh = String(hour).padStart(2, '0');
+            const mm = String(minute).padStart(2, '0');
+            return `${y}${m}${d}T${hh}${mm}00`;
+        }
+        
+        // 获取当前UTC时间戳 (DTSTAMP)
+        function getUTCDtstamp() {
+            const now = new Date();
+            const y = now.getUTCFullYear();
+            const m = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const d = String(now.getUTCDate()).padStart(2, '0');
+            const h = String(now.getUTCHours()).padStart(2, '0');
+            const min = String(now.getUTCMinutes()).padStart(2, '0');
+            const s = String(now.getUTCSeconds()).padStart(2, '0');
+            return `${y}${m}${d}T${h}${min}${s}Z`;
+        }
+        
+        // 生成ICS文件内容 (完全兼容Outlook，无浮点时间)
+        function generateICSContent(year, inventoryDates, config) {
+            const {
+                startHour, startMinute,
+                endHour, endMinute,
+                summary,
+                description,
+                categoriesRaw
+            } = config;
+            
+            let lines = [];
+            lines.push('BEGIN:VCALENDAR');
+            lines.push('VERSION:2.0');
+            lines.push('PRODID:-//Smart-Calendar-Generator//自定义规则//CN');
+            lines.push('CALSCALE:GREGORIAN');
+            lines.push('METHOD:PUBLISH');
+            lines.push('X-WR-TIMEZONE:Asia/Shanghai');
+            // 添加时区定义提高兼容性
+            lines.push('BEGIN:VTIMEZONE');
+            lines.push('TZID:Asia/Shanghai');
+            lines.push('X-LIC-LOCATION:Asia/Shanghai');
+            lines.push('BEGIN:STANDARD');
+            lines.push('TZOFFSETFROM:+0800');
+            lines.push('TZOFFSETTO:+0800');
+            lines.push('TZNAME:CST');
+            lines.push('DTSTART:19700101T000000');
+            lines.push('END:STANDARD');
+            lines.push('END:VTIMEZONE');
+            
+            for (let i = 0; i < inventoryDates.length; i++) {
+                const eventDate = inventoryDates[i];
+                const yearVal = eventDate.getFullYear();
+                const monthVal = eventDate.getMonth() + 1;
+                const dayVal = eventDate.getDate();
+                
+                const dtstartStr = formatLocalDateTime(eventDate, startHour, startMinute);
+                const dtendStr = formatLocalDateTime(eventDate, endHour, endMinute);
+                const dtstampStr = getUTCDtstamp();
+                const uid = `inventory-custom-${yearVal}${String(monthVal).padStart(2,'0')}${String(dayVal).padStart(2,'0')}@web-gen`;
+                
+                lines.push('BEGIN:VEVENT');
+                lines.push(`UID:${uid}`);
+                lines.push(`DTSTAMP:${dtstampStr}`);
+                lines.push(`DTSTART;TZID=Asia/Shanghai:${dtstartStr}`);
+                lines.push(`DTEND;TZID=Asia/Shanghai:${dtendStr}`);
+                lines.push(`SUMMARY:${escapeText(summary)}`);
+                if (description && description.trim() !== '') {
+                    lines.push(`DESCRIPTION:${escapeText(description)}`);
+                } else {
+                    lines.push(`DESCRIPTION:自定义盘点任务`);
+                }
+                // 分类处理: 如果用户填了非空字符串则添加CATEGORIES，否则完全忽略
+                const categoriesTrim = categoriesRaw ? categoriesRaw.trim() : '';
+                if (categoriesTrim !== '') {
+                    // 将用户输入的逗号分隔转换为ICS格式（用逗号分隔类别）
+                    const cats = categoriesTrim.split(',').map(c => c.trim()).filter(c => c);
+                    if (cats.length > 0) {
+                        lines.push(`CATEGORIES:${cats.join(',')}`);
+                    }
+                }
+                // 添加提醒 (可选提前5分钟)
+                lines.push('BEGIN:VALARM');
+                lines.push('TRIGGER:-PT5M');
+                lines.push('ACTION:DISPLAY');
+                lines.push(`DESCRIPTION:${escapeText(summary)}即将开始`);
+                lines.push('END:VALARM');
+                lines.push('END:VEVENT');
+            }
+            
+            lines.push('END:VCALENDAR');
+            return lines.join('\r\n');
+        }
+        
+        // 简单转义 ICS 特殊字符 (防止逗号、冒号等造成格式错误)
+        function escapeText(text) {
+            if (!text) return '';
+            return text.replace(/\\/g, '\\\\')
+                       .replace(/;/g, '\\;')
+                       .replace(/,/g, '\\,')
+                       .replace(/\n/g, '\\n');
+        }
+        
+        // 解析时间字符串 "HH:MM" 返回 {hour, minute}
+        function parseTime(timeStr) {
+            const parts = timeStr.split(':');
+            let hour = parseInt(parts[0], 10);
+            let minute = parseInt(parts[1], 10);
+            if (isNaN(hour)) hour = 9;
+            if (isNaN(minute)) minute = 0;
+            return { hour, minute };
+        }
+        
+        // 获取当前配置
+        function getCurrentConfig() {
+            const year = parseInt(yearSelect.value, 10);
+            let targetDay = parseInt(targetDayInput.value, 10);
+            if (isNaN(targetDay) || targetDay < 1) targetDay = 1;
+            if (targetDay > 31) targetDay = 31;
+            
+            const startTime = startTimeInput.value;
+            const endTime = endTimeInput.value;
+            const { hour: startHour, minute: startMinute } = parseTime(startTime);
+            const { hour: endHour, minute: endMinute } = parseTime(endTime);
+            
+            const summary = eventSummaryInput.value.trim() || "盘点任务";
+            const description = eventDescInput.value;
+            const categoriesRaw = categoriesInput.value;
+            
+            return {
+                year,
+                targetDay,
+                startHour, startMinute,
+                endHour, endMinute,
+                summary,
+                description,
+                categoriesRaw
+            };
+        }
+        
+        // 渲染日期预览表格
+        function renderPreview() {
+            const config = getCurrentConfig();
+            const { year, targetDay } = config;
+            // 获取全年日期
+            const datesArray = getAllInventoryDates(year, targetDay);
+            
+            if (!datesArray.length) {
+                dateListContainer.innerHTML = '<div style="padding: 20px; text-align:center;">无法生成日期，请检查参数</div>';
+                return;
+            }
+            
+            const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            let gridHTML = `<div class="date-grid">`;
+            
+            for (let i = 0; i < datesArray.length; i++) {
+                const d = datesArray[i];
+                const monthIdx = d.getMonth();
+                const monthLabel = monthNames[monthIdx];
+                const formattedDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                const weekdayName = weekdays[d.getDay()];
+                
+                // 辅助获取当月基准日信息（用于提示）
+                const daysInMonth = getDaysInMonth(year, monthIdx);
+                let baseTarget = targetDay;
+                if (baseTarget > daysInMonth) baseTarget = daysInMonth;
+                const baseDateObj = new Date(year, monthIdx, baseTarget);
+                const isBaseWorkday = isWeekday(baseDateObj);
+                let ruleDesc = '';
+                if (baseDateObj.getDate() === d.getDate() && isBaseWorkday) {
+                    ruleDesc = '✓ 基准日本身';
+                } else if (d.getDate() < baseTarget) {
+                    const diff = baseTarget - d.getDate();
+                    ruleDesc = `← 提前${diff}天`;
+                } else {
+                    ruleDesc = `(向前规则)`;
+                }
+                
+                gridHTML += `
+                    <div class="date-item">
+                        <span class="month">${monthLabel}</span>
+                        <div class="day-info">
+                            <span class="day-date">${formattedDate}</span>
+                            <span class="weekday-badge">${weekdayName}</span>
+                            <span class="rule-tag">${ruleDesc}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            gridHTML += `</div>`;
+            dateListContainer.innerHTML = gridHTML;
+            
+            // 同时把当前datesArray存到window供下载使用
+            window.__currentInventoryDates = datesArray;
+            window.__currentConfig = config;
+        }
+        
+        // 下载 ICS
+        function downloadICS() {
+            if (!window.__currentInventoryDates || window.__currentInventoryDates.length === 0) {
+                alert('请先刷新预览生成日历数据');
+                renderPreview(); // 尝试重新生成
+                if (!window.__currentInventoryDates || window.__currentInventoryDates.length === 0) {
+                    alert('无法生成日历数据，请检查年份或基准日');
+                    return;
+                }
+            }
+            const dates = window.__currentInventoryDates;
+            const config = window.__currentConfig || getCurrentConfig();
+            const { year, summary } = config;
+            const icsContent = generateICSContent(year, dates, config);
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            // 文件名包含年份和任务名称
+            const safeSummary = summary.replace(/[\\/:*?"<>|]/g, '_').substring(0, 20);
+            link.download = `${safeSummary}_${year}_自定义日历.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            // 简单反馈
+            const originalText = downloadBtn.innerText;
+            downloadBtn.innerText = '✅ 下载已生成！';
+            setTimeout(() => {
+                downloadBtn.innerText = originalText;
+            }, 1500);
+        }
+        
+        // 校验结束时间不得早于开始时间 (轻微提示)
+        function validateTimes() {
+            const start = startTimeInput.value;
+            const end = endTimeInput.value;
+            if (start && end && start >= end) {
+                // 如果结束时间不晚于开始时间，给个样式提示但不强制阻止
+                endTimeInput.style.borderColor = '#ef4444';
+                setTimeout(() => {
+                    endTimeInput.style.borderColor = '#cbd5e1';
+                }, 1500);
+                console.warn("结束时间应晚于开始时间");
+            }
+        }
+        
+        // 事件绑定
+        function bindEvents() {
+            refreshBtn.addEventListener('click', () => {
+                validateTimes();
+                renderPreview();
+                // 闪烁提示刷新完成
+                const original = refreshBtn.innerText;
+                refreshBtn.innerText = '✅ 已刷新';
+                setTimeout(() => { refreshBtn.innerText = original; }, 1000);
+            });
+            
+            downloadBtn.addEventListener('click', () => {
+                validateTimes();
+                // 确保预览最新
+                if (!window.__currentInventoryDates) {
+                    renderPreview();
+                } else {
+                    // 重新基于当前配置再次生成最新日期，防止配置改变未刷新
+                    const config = getCurrentConfig();
+                    const { year, targetDay } = config;
+                    const freshDates = getAllInventoryDates(year, targetDay);
+                    window.__currentInventoryDates = freshDates;
+                    window.__currentConfig = config;
+                    // 可选更新UI，但不重新渲染列表（避免覆盖用户手动刷新，但下载前确保数据一致）
+                }
+                downloadICS();
+            });
+            
+            // 年份或基准日变更时自动刷新预览 (可选)
+            yearSelect.addEventListener('change', () => renderPreview());
+            targetDayInput.addEventListener('change', () => renderPreview());
+            // 时间和内容变更不自动刷新预览，但下载时会基于最新配置生成，用户也可以手动刷新
+        }
+        
+        // 初始化
+        function init() {
+            populateYearOptions();
+            bindEvents();
+            // 首次渲染预览（默认25日）
+            renderPreview();
+        }
+        
+        init();
+    })();
+</script>
+</body>
+</html>
