@@ -8,28 +8,92 @@
         * {
             box-sizing: border-box;
         }
+
+        /* 深色模式变量定义 */
+        :root {
+            --bg-primary: #f0f4f8;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #5b6e8c;
+            --border-color: #e2e8f0;
+            --config-bg: #f8fafc;
+            --rule-hint-bg: #eef2ff;
+            --rule-hint-text: #1e40af;
+            --date-list-bg: #f8fafc;
+            --date-item-border: #e2e8f0;
+            --day-date-bg: #e6f0ff;
+            --day-date-text: #0f3b5f;
+            --rule-tag-bg: #f1f5f9;
+            --expired-bg: #f1f5f9;
+            --expired-opacity: 0.7;
+            --empty-preview-text: #94a3b8;
+            --empty-preview-bg: #f8fafc;
+            --info-banner-bg: #fef9e3;
+            --info-banner-text: #92400e;
+            --btn-secondary-bg: #f1f5f9;
+            --btn-secondary-border: #cbd5e1;
+            --btn-secondary-text: #1e293b;
+            --input-border: #cbd5e1;
+            --input-bg: #ffffff;
+            --header-bg: linear-gradient(135deg, #1e3a5f 0%, #0f2c44 100%);
+        }
+
+        /* 深色模式样式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0f172a;
+                --bg-card: #1e293b;
+                --text-primary: #e2e8f0;
+                --text-secondary: #94a3b8;
+                --border-color: #334155;
+                --config-bg: #0f172a;
+                --rule-hint-bg: #1e293b;
+                --rule-hint-text: #60a5fa;
+                --date-list-bg: #0f172a;
+                --date-item-border: #334155;
+                --day-date-bg: #1e293b;
+                --day-date-text: #93c5fd;
+                --rule-tag-bg: #334155;
+                --expired-bg: #0f172a;
+                --expired-opacity: 0.5;
+                --empty-preview-text: #64748b;
+                --empty-preview-bg: #0f172a;
+                --info-banner-bg: #332211;
+                --info-banner-text: #fbbf24;
+                --btn-secondary-bg: #334155;
+                --btn-secondary-border: #475569;
+                --btn-secondary-text: #e2e8f0;
+                --input-border: #475569;
+                --input-bg: #1e293b;
+                --header-bg: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            }
+        }
+
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #f0f4f8;
+            background: var(--bg-primary);
             margin: 0;
             min-height: 100vh;
             padding: 24px 16px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
         }
         .card {
-            background: white;
+            background: var(--bg-card);
             border-radius: 32px;
             box-shadow: 0 20px 35px -12px rgba(0,0,0,0.12);
             overflow: hidden;
             margin-bottom: 24px;
+            transition: background 0.3s ease;
         }
         .header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f2c44 100%);
+            background: var(--header-bg);
             color: white;
             padding: 1.8rem 2rem;
+            transition: background 0.3s ease;
         }
         .header h1 {
             margin: 0 0 0.5rem 0;
@@ -46,11 +110,12 @@
             padding: 2rem;
         }
         .config-section {
-            background: #f8fafc;
+            background: var(--config-bg);
             border-radius: 24px;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .config-grid {
             display: grid;
@@ -65,7 +130,7 @@
         }
         .config-item label {
             font-weight: 600;
-            color: #0f2c44;
+            color: var(--text-primary);
             font-size: 0.9rem;
             display: flex;
             align-items: center;
@@ -73,11 +138,12 @@
         }
         .config-item input, .config-item select, .config-item textarea {
             padding: 0.65rem 1rem;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--input-border);
             border-radius: 14px;
             font-size: 0.95rem;
             transition: all 0.2s;
-            background: white;
+            background: var(--input-bg);
+            color: var(--text-primary);
             font-family: inherit;
         }
         .config-item input:focus, .config-item select:focus, .config-item textarea:focus {
@@ -85,17 +151,18 @@
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         }
-        .config-item textarea {
-            resize: vertical;
-            min-height: 70px;
+        .config-item select option {
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
         .rule-hint {
-            background: #eef2ff;
+            background: var(--rule-hint-bg);
             border-radius: 14px;
             padding: 0.8rem 1.2rem;
             margin-top: 1rem;
             font-size: 0.85rem;
-            color: #1e40af;
+            color: var(--rule-hint-text);
+            transition: background 0.3s ease, color 0.3s ease;
         }
         .btn-group {
             display: flex;
@@ -112,8 +179,8 @@
             font-size: 0.95rem;
             cursor: pointer;
             transition: 0.2s;
-            background: #f1f5f9;
-            color: #1e293b;
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         .btn-primary {
@@ -126,11 +193,13 @@
             transform: translateY(-1px);
         }
         .btn-secondary {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
+            background: var(--btn-secondary-bg);
+            border: 1px solid var(--btn-secondary-border);
+            color: var(--btn-secondary-text);
         }
         .btn-secondary:hover {
-            background: #e2e8f0;
+            background: #475569;
+            color: white;
         }
         .preview-area {
             margin-top: 2rem;
@@ -140,11 +209,12 @@
             display: block;
         }
         .date-list {
-            background: #f8fafc;
+            background: var(--date-list-bg);
             border-radius: 20px;
             margin: 1.5rem 0;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             overflow-x: auto;
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .date-grid {
             display: grid;
@@ -153,26 +223,24 @@
         }
         .date-item {
             padding: 0.8rem 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--date-item-border);
+            border-right: 1px solid var(--date-item-border);
             font-size: 0.9rem;
             display: flex;
             align-items: baseline;
             justify-content: space-between;
             flex-wrap: wrap;
             transition: all 0.2s;
+            color: var(--text-primary);
         }
         .date-item.expired {
-            background: #f1f5f9;
-            opacity: 0.7;
+            background: var(--expired-bg);
+            opacity: var(--expired-opacity);
         }
         .month {
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
             width: 48px;
-        }
-        .date-item.expired .month {
-            color: #64748b;
         }
         .day-info {
             display: flex;
@@ -182,26 +250,23 @@
         }
         .day-date {
             font-family: monospace;
-            background: #e6f0ff;
+            background: var(--day-date-bg);
             padding: 0.2rem 0.6rem;
             border-radius: 40px;
             font-size: 0.8rem;
             font-weight: 500;
-        }
-        .date-item.expired .day-date {
-            background: #e2e8f0;
-            color: #64748b;
+            color: var(--day-date-text);
         }
         .weekday-badge {
             font-size: 0.7rem;
-            color: #475569;
+            color: var(--text-secondary);
         }
         .rule-tag {
             font-size: 0.65rem;
-            background: #f1f5f9;
+            background: var(--rule-tag-bg);
             padding: 2px 6px;
             border-radius: 20px;
-            color: #2c3e66;
+            color: var(--text-secondary);
         }
         .expired-badge {
             font-size: 0.65rem;
@@ -211,9 +276,11 @@
             color: #475569;
             font-weight: 500;
         }
-        .date-item.expired .rule-tag {
-            background: #e2e8f0;
-            color: #64748b;
+        @media (prefers-color-scheme: dark) {
+            .expired-badge {
+                background: #475569;
+                color: #94a3b8;
+            }
         }
         .download-area {
             text-align: center;
@@ -223,26 +290,45 @@
             margin-top: 1.5rem;
             text-align: center;
             font-size: 0.75rem;
-            color: #5b6e8c;
-            border-top: 1px solid #e2e8f0;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
             padding-top: 1.2rem;
         }
         .empty-preview {
             text-align: center;
             padding: 40px 20px;
-            color: #94a3b8;
-            background: #f8fafc;
+            color: var(--empty-preview-text);
+            background: var(--empty-preview-bg);
             border-radius: 20px;
-            border: 1px dashed #cbd5e1;
+            border: 1px dashed var(--border-color);
         }
         .info-banner {
-            background: #fef9e3;
+            background: var(--info-banner-bg);
             border-left: 4px solid #f59e0b;
             padding: 0.75rem 1rem;
             margin-bottom: 1rem;
             border-radius: 12px;
             font-size: 0.85rem;
-            color: #92400e;
+            color: var(--info-banner-text);
+        }
+        .search-direction {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 0.3rem;
+        }
+        .search-direction label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .search-direction input[type="radio"] {
+            width: auto;
+            margin: 0;
+            transform: scale(1.1);
+            cursor: pointer;
         }
         @media (max-width: 640px) {
             .content {
@@ -259,7 +345,7 @@
     <div class="card">
         <div class="header">
             <h1>📅 智能周期任务日历生成器</h1>
-            <p>自定义规则 | 预览全年 | 仅生成剩余月份日历 | 一键导出</p>
+            <p>自定义规则 | 双向查找 | 深色模式 | 一键导出</p>
         </div>
         <div class="content">
             <!-- 配置区域 -->
@@ -272,7 +358,18 @@
                     <div class="config-item">
                         <label>📌 基准日期（每月几日）</label>
                         <input type="number" id="targetDay" min="1" max="31" value="25" step="1">
-                        <div style="font-size:0.7rem; color:#5b6e8c;">规则：取当月该日期之前（含当天）最近的工作日</div>
+                    </div>
+                    <div class="config-item">
+                        <label>🔍 查找方向</label>
+                        <div class="search-direction">
+                            <label>
+                                <input type="radio" name="searchDir" value="before" checked> 向前查找（取之前）
+                            </label>
+                            <label>
+                                <input type="radio" name="searchDir" value="after"> 向后查找（取之后）
+                            </label>
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);">向前：取基准日前最近工作日；向后：取基准日后最近工作日</div>
                     </div>
                     <div class="config-item">
                         <label>⏰ 开始时间</label>
@@ -293,12 +390,13 @@
                     <div class="config-item">
                         <label>🏷️ 分类标签（可选）</label>
                         <input type="text" id="categories" value="工作,周期任务" placeholder="多个标签用英文逗号分隔">
-                        <div style="font-size:0.7rem; color:#5b6e8c;">留空则不添加CATEGORIES字段</div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);">留空则不添加CATEGORIES字段</div>
                     </div>
                 </div>
                 <div class="rule-hint">
-                    💡 智能规则：根据所选基准日期，自动寻找该日期之前最近的一个工作日（如基准日本身是工作日则取当天）。<br>
-                    📅 预览区显示全年12个月，已过月份会标注「已过期」；生成的ICS文件仅包含当前月份至年底的剩余任务。
+                    💡 智能规则：根据所选基准日期和查找方向，自动寻找最近的工作日。<br>
+                    📅 预览区显示全年12个月，已过月份会标注「已过期」；生成的ICS文件仅包含当前月份至年底的剩余任务。<br>
+                    🌙 支持深色模式（跟随系统设置自动切换）
                 </div>
             </div>
 
@@ -311,8 +409,8 @@
             <div id="previewArea" class="preview-area">
                 <div class="info-banner" id="infoBanner" style="display: none;"></div>
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
-                    <h3 style="margin:0; font-size:1.2rem;">📋 全年12月执行日期预览</h3>
-                    <span style="font-size:0.75rem; color:#64748b;">⚠️ 灰色表示已过期月份（不计入导出文件）</span>
+                    <h3 style="margin:0; font-size:1.2rem; color:var(--text-primary);">📋 全年12月执行日期预览</h3>
+                    <span style="font-size:0.75rem; color:var(--text-secondary);">⚠️ 灰色表示已过期月份（不计入导出文件）</span>
                 </div>
                 <div id="dateListContainer" class="date-list">
                     <div class="empty-preview">暂无预览数据，请点击上方按钮生成</div>
@@ -324,7 +422,7 @@
 
             <div class="footer-note">
                 ✅ 生成的ICS文件完全符合RFC 5545标准，兼容Outlook、Google日历、Apple日历等主流应用。<br>
-                ⚡ 规则：距离基准日之前最近的工作日（若基准日当天为工作日则取当天），仅导出当前月份至年底的任务。
+                ⚡ 规则：支持向前/向后查找最近工作日，仅导出当前月份至年底的任务，深色模式自动适配。
             </div>
         </div>
     </div>
@@ -345,6 +443,15 @@
         const previewArea = document.getElementById('previewArea');
         const dateListContainer = document.getElementById('dateListContainer');
         const infoBanner = document.getElementById('infoBanner');
+        
+        // 获取查找方向
+        function getSearchDirection() {
+            const radios = document.querySelectorAll('input[name="searchDir"]');
+            for (let radio of radios) {
+                if (radio.checked) return radio.value;
+            }
+            return 'before';
+        }
         
         // 存储当前生成的日历数据
         let currentAllDates = [];      // 全年12个月数据
@@ -387,8 +494,8 @@
         }
         
         /**
-         * 核心：根据年份、月份(0-index)和用户设定的基准日targetDay (1-31)
-         * 返回: 距离基准日之前（含基准日当天）最近的工作日 Date对象。
+         * 核心：向前查找最近工作日
+         * 从基准日开始向前（递减）查找
          */
         function findPreviousWorkday(year, month, targetDay) {
             const daysInMonth = getDaysInMonth(year, month);
@@ -405,40 +512,69 @@
             return new Date(year, month, baseDay);
         }
         
-        // 获取全年12个月的日期数组 (monthIdx 0~11)
-        function getAllInventoryDates(year, targetDay) {
+        /**
+         * 核心：向后查找最近工作日
+         * 从基准日开始向后（递增）查找
+         */
+        function findNextWorkday(year, month, targetDay) {
+            const daysInMonth = getDaysInMonth(year, month);
+            let baseDay = targetDay;
+            if (baseDay > daysInMonth) {
+                baseDay = daysInMonth;
+            }
+            // 先从基准日当天开始检查（包含当天）
+            for (let d = baseDay; d <= daysInMonth; d++) {
+                const candidate = new Date(year, month, d);
+                if (isWeekday(candidate)) {
+                    return candidate;
+                }
+            }
+            // 如果当月找不到（理论上不可能），返回最后一天
+            return new Date(year, month, daysInMonth);
+        }
+        
+        /**
+         * 统一接口：根据查找方向获取工作日
+         */
+        function findWorkdayByDirection(year, month, targetDay, direction) {
+            if (direction === 'after') {
+                return findNextWorkday(year, month, targetDay);
+            } else {
+                return findPreviousWorkday(year, month, targetDay);
+            }
+        }
+        
+        // 获取全年12个月的日期数组
+        function getAllInventoryDates(year, targetDay, direction) {
             const dates = [];
             for (let month = 0; month < 12; month++) {
-                const inventoryDate = findPreviousWorkday(year, month, targetDay);
+                const inventoryDate = findWorkdayByDirection(year, month, targetDay, direction);
                 dates.push(inventoryDate);
             }
             return dates;
         }
         
         // 获取从当前月份到年底的日期数组
-        function getRemainingInventoryDates(year, targetDay) {
+        function getRemainingInventoryDates(year, targetDay, direction) {
             const currentMonth = getCurrentMonth();
             const selectedYear = year;
             const currentYearVal = getCurrentYear();
             
-            // 如果选择的年份小于当前年份，全部过期，返回空数组
             if (selectedYear < currentYearVal) {
                 return [];
             }
             
-            // 如果选择的年份等于当前年份，从当前月开始
             if (selectedYear === currentYearVal) {
                 const startMonthIdx = currentMonth - 1;
                 const dates = [];
                 for (let month = startMonthIdx; month < 12; month++) {
-                    const inventoryDate = findPreviousWorkday(year, month, targetDay);
+                    const inventoryDate = findWorkdayByDirection(year, month, targetDay, direction);
                     dates.push(inventoryDate);
                 }
                 return dates;
             }
             
-            // 如果选择的年份大于当前年份，返回全年
-            return getAllInventoryDates(year, targetDay);
+            return getAllInventoryDates(year, targetDay, direction);
         }
         
         // 判断某个月份是否已过期
@@ -448,11 +584,10 @@
             
             if (year < currentYearVal) return true;
             if (year > currentYearVal) return false;
-            // 同年：月份索引小于当前月份则过期
             return (monthIndex + 1) < currentMonthVal;
         }
         
-        // 格式化日期时间用于ICS (本地时间，无Z)
+        // 格式化日期时间用于ICS
         function formatLocalDateTime(date, hour, minute) {
             const y = date.getFullYear();
             const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -493,7 +628,7 @@
             return { hour, minute };
         }
         
-        // 生成ICS文件内容（仅剩余月份）
+        // 生成ICS文件内容
         function generateICSContent(year, inventoryDates, config) {
             const {
                 startHour, startMinute,
@@ -579,6 +714,7 @@
             const summary = eventSummaryInput.value.trim() || "周期任务";
             const description = eventDescInput.value;
             const categoriesRaw = categoriesInput.value;
+            const direction = getSearchDirection();
             
             return {
                 year,
@@ -587,16 +723,17 @@
                 endHour, endMinute,
                 summary,
                 description,
-                categoriesRaw
+                categoriesRaw,
+                direction
             };
         }
         
         // 渲染预览（显示全年，标注过期月份）
         function renderPreview() {
             const config = getCurrentConfig();
-            const { year, targetDay } = config;
-            const allDates = getAllInventoryDates(year, targetDay);
-            const remainingDates = getRemainingInventoryDates(year, targetDay);
+            const { year, targetDay, direction } = config;
+            const allDates = getAllInventoryDates(year, targetDay, direction);
+            const remainingDates = getRemainingInventoryDates(year, targetDay, direction);
             
             if (!allDates || allDates.length === 0) {
                 dateListContainer.innerHTML = '<div class="empty-preview">⚠️ 无法生成日历数据，请检查年份设置</div>';
@@ -614,7 +751,6 @@
             const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
             const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
             const currentYearVal = getCurrentYear();
-            const currentMonthVal = getCurrentMonth();
             
             let gridHTML = `<div class="date-grid">`;
             
@@ -631,14 +767,27 @@
                 if (baseTarget > daysInMonth) baseTarget = daysInMonth;
                 const baseDateObj = new Date(year, monthIdx, baseTarget);
                 const isBaseWorkday = isWeekday(baseDateObj);
+                
                 let ruleDesc = '';
-                if (baseDateObj.getDate() === d.getDate() && isBaseWorkday) {
-                    ruleDesc = '✓ 基准日本身';
-                } else if (d.getDate() < baseTarget) {
-                    const diff = baseTarget - d.getDate();
-                    ruleDesc = `← 提前${diff}天`;
+                if (direction === 'before') {
+                    if (baseDateObj.getDate() === d.getDate() && isBaseWorkday) {
+                        ruleDesc = '✓ 基准日本身';
+                    } else if (d.getDate() < baseTarget) {
+                        const diff = baseTarget - d.getDate();
+                        ruleDesc = `← 提前${diff}天`;
+                    } else {
+                        ruleDesc = `(向前查找)`;
+                    }
                 } else {
-                    ruleDesc = `(向前规则)`;
+                    // 向后查找
+                    if (baseDateObj.getDate() === d.getDate() && isBaseWorkday) {
+                        ruleDesc = '✓ 基准日本身';
+                    } else if (d.getDate() > baseTarget) {
+                        const diff = d.getDate() - baseTarget;
+                        ruleDesc = `→ 延后${diff}天`;
+                    } else {
+                        ruleDesc = `(向后查找)`;
+                    }
                 }
                 
                 const expiredClass = expired ? 'expired' : '';
@@ -659,21 +808,20 @@
             gridHTML += `</div>`;
             dateListContainer.innerHTML = gridHTML;
             
-            // 显示信息横幅
             const remainingCount = remainingDates.length;
-            const totalCount = allDates.length;
-            const expiredCount = totalCount - remainingCount;
+            const expiredCount = allDates.length - remainingCount;
+            const directionText = direction === 'before' ? '向前查找' : '向后查找';
             
             if (expiredCount > 0) {
                 infoBanner.style.display = 'block';
-                infoBanner.innerHTML = `📌 当前年份：${year}年 | 已过期月份：${expiredCount}个月（已标注灰色） | 可导出任务：${remainingCount}个月（${year === currentYearVal ? '从本月开始' : '全年'}）`;
+                infoBanner.innerHTML = `📌 当前年份：${year}年 | 查找方式：${directionText} | 已过期月份：${expiredCount}个月 | 可导出任务：${remainingCount}个月`;
             } else {
                 infoBanner.style.display = 'block';
-                infoBanner.innerHTML = `📌 当前年份：${year}年 | 全部月份有效，将导出全年12个月任务`;
+                infoBanner.innerHTML = `📌 当前年份：${year}年 | 查找方式：${directionText} | 全部月份有效，将导出全年任务`;
             }
         }
         
-        // 下载 ICS（仅剩余月份）
+        // 下载 ICS
         function downloadICS() {
             if (!currentRemainingDates || currentRemainingDates.length === 0) {
                 alert('当前无剩余月份任务可导出（所选年份的所有月份均已过期或年份无效）');
@@ -719,7 +867,7 @@
             if (start && end && start >= end) {
                 endTimeInput.style.borderColor = '#ef4444';
                 setTimeout(() => {
-                    endTimeInput.style.borderColor = '#cbd5e1';
+                    endTimeInput.style.borderColor = 'var(--input-border)';
                 }, 1500);
                 return false;
             }
